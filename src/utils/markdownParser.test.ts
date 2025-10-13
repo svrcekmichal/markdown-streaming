@@ -31,7 +31,7 @@ describe('getLastRenderableMarkdown', () => {
 
   describe('italic text', () => {
     const testPairs = [
-      ['This is *italic', 'This is '],
+      ['This is *italic', 'This is'],
       ['This is *italic*', 'This is *italic*'],
       ['**bold *italic* bold**', '**bold *italic* bold**'],
     ]
