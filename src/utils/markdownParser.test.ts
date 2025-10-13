@@ -47,8 +47,8 @@ describe('getLastRenderableMarkdown', () => {
       ['```javascript\nconst x = 1', '```javascript\nconst x = 1'],
       ['```javascript\nconst x = 1\n```', '```javascript\nconst x = 1\n```'],
       ['```typescript\nfunction test() {\n  return true\n}\n```', '```typescript\nfunction test() {\n  return true\n}\n```'],
-      ['Some text\n```javascript\nconst x = 1\n```', 'Some text\n```javascript\nconst x = 1\n```'],
-      ['Line 1\nLine 2\n```javascript\nconst x = 1', 'Line 1\nLine 2'],
+      ['Some text\n```javascript\nconst x = 1\n```', 'Some text\n```javascript\nconst x = 1'],
+      ['Line 1\nLine 2\n```javascript\nconst x = 1', 'Line 1\nLine 2\n```javascript\nconst x = 1'],
     ]
 
     test.each(testPairs)('should handle code blocks', (input, expected) => {

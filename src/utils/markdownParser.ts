@@ -127,6 +127,14 @@ export function getLastRenderableMarkdown(text: string): string {
     return text
   }
   
+  // Special handling for code blocks - if code block starts on first line and has content, return it
+  if (unclosedCodeBlock && lines.length > 1) {
+    // Only return full text if code block starts on the first line
+    if (lines[0].startsWith('```')) {
+      return text
+    }
+  }
+  
   // If there are multiple lines and last line is incomplete
   if (lines.length > 1) {
     // If there's an incomplete tag on the last line, include it up to the tag
