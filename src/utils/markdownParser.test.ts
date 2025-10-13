@@ -47,11 +47,53 @@ describe('getLastRenderableMarkdown', () => {
       ['```javascript\nconst x = 1', '```javascript\nconst x = 1'],
       ['```javascript\nconst x = 1\n```', '```javascript\nconst x = 1\n```'],
       ['```typescript\nfunction test() {\n  return true\n}\n```', '```typescript\nfunction test() {\n  return true\n}\n```'],
-      ['Some text\n```javascript\nconst x = 1\n```', 'Some text\n```javascript\nconst x = 1'],
+      ['Some text\n```javascript\nconst x = 1\n```', 'Some text\n```javascript\nconst x = 1\n```'],
       ['Line 1\nLine 2\n```javascript\nconst x = 1', 'Line 1\nLine 2\n```javascript\nconst x = 1'],
     ]
 
     test.each(testPairs)('should handle code blocks', (input, expected) => {
+      expect(getLastRenderableMarkdown(input)).toBe(expected)
+    })
+
+    it('should return full text for code block starting on later line with incomplete last line', () => {
+      const input = `#### Example Code Block
+
+\`\`\`typescript
+function streamMarkdown(text: string) {
+  return text
+    .split('')
+    .reduce((acc, char) =>`
+
+      const expected = `#### Example Code Block
+
+\`\`\`typescript
+function streamMarkdown(text: string) {
+  return text
+    .split('')
+    .reduce((acc, char) =>`
+
+      expect(getLastRenderableMarkdown(input)).toBe(expected)
+    })
+
+    it('should return full text for code block with multi-line incomplete content', () => {
+      const input = `# Title
+
+Some text here.
+
+\`\`\`javascript
+const x = 1
+const y = 2
+const z =`
+
+      const expected = `# Title
+
+Some text here.
+
+\`\`\`javascript
+const x = 1
+const y = 2
+const z =`
+
       expect(getLastRenderableMarkdown(input)).toBe(expected)
     })
   })
