@@ -127,7 +127,20 @@ export function getLastRenderableMarkdown(text: string): string {
     return text
   }
   
-  // If text is incomplete, return text up to the last open tag
+  // If there are multiple lines and last line is incomplete
+  if (lines.length > 1) {
+    // If there's an incomplete tag on the last line, include it up to the tag
+    if (lastOpenTagIndex > 0) {
+      const lastLineUpToTag = lastLine.substring(0, lastOpenTagIndex).trimEnd()
+      if (lastLineUpToTag) {
+        return [...lines.slice(0, -1), lastLineUpToTag].join('\n')
+      }
+    }
+    // Otherwise, just return previous lines
+    return lines.slice(0, -1).join('\n')
+  }
+  
+  // If there's only one line and it's incomplete, return text up to the last open tag
   if (lastOpenTagIndex > 0) {
     return lastLine.substring(0, lastOpenTagIndex).trimEnd()
   }
