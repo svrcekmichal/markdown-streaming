@@ -13,7 +13,7 @@ export function getLastRenderableMarkdown(text: string): string {
   const lines = text.split('\n')
   const lastLine = lines[lines.length - 1]
   
-  // Count unclosed markdown tags
+  // Count unclosed markdown tags and track where they start
   let unclosedBold = 0
   let unclosedItalic = 0
   let unclosedCode = 0
@@ -21,6 +21,8 @@ export function getLastRenderableMarkdown(text: string): string {
   let unclosedImage = 0
   let unclosedCodeBlock = false
   let inLinkUrl = false  // Track if we're inside the URL part of a link
+  
+  let lastOpenTagIndex = -1  // Track the position of the last opened tag
   
   // Track state through the line
   for (let i = 0; i < lastLine.length; i++) {
@@ -31,28 +33,46 @@ export function getLastRenderableMarkdown(text: string): string {
     // Bold **
     if (char === '*' && nextChar === '*' && prevChar !== '*') {
       unclosedBold = 1 - unclosedBold
+      if (unclosedBold === 1) {
+        lastOpenTagIndex = i
+      }
       i++ // Skip next char
     }
     // Italic * (single asterisk, not part of **)
     else if (char === '*' && prevChar !== '*' && nextChar !== '*') {
       unclosedItalic = 1 - unclosedItalic
+      if (unclosedItalic === 1) {
+        lastOpenTagIndex = i
+      }
     }
     // Code block ``` (check this before inline code)
     else if (lastLine.substring(i, i + 3) === '```') {
       unclosedCodeBlock = !unclosedCodeBlock
+      if (unclosedCodeBlock) {
+        lastOpenTagIndex = i
+      }
       i += 2 // Skip next 2 chars
     }
     // Inline code ` (only if not inside a code block)
     else if (char === '`' && !unclosedCodeBlock) {
       unclosedCode = 1 - unclosedCode
+      if (unclosedCode === 1) {
+        lastOpenTagIndex = i
+      }
     }
     // Link [
     else if (char === '[' && prevChar !== '!') {
       unclosedLink = 1 - unclosedLink
+      if (unclosedLink === 1) {
+        lastOpenTagIndex = i
+      }
     }
     // Image ![
     else if (char === '[' && prevChar === '!') {
       unclosedImage = 1 - unclosedImage
+      if (unclosedImage === 1) {
+        lastOpenTagIndex = i - 1  // Include the !
+      }
     }
     // Closing ]
     else if (char === ']') {
@@ -107,13 +127,12 @@ export function getLastRenderableMarkdown(text: string): string {
     return text
   }
   
-  // If incomplete, return everything except the last line
-  // This ensures we only render complete lines
-  if (lines.length > 1) {
-    return lines.slice(0, -1).join('\n')
+  // If text is incomplete, return text up to the last open tag
+  if (lastOpenTagIndex > 0) {
+    return lastLine.substring(0, lastOpenTagIndex).trimEnd()
   }
   
-  // If there's only one line and it's incomplete, return empty string
+  // If no open tag found, return empty string
   return ''
 }
 
