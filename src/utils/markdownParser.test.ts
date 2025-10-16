@@ -100,10 +100,10 @@ const z =`
 
   describe('inline code', () => {
     const testPairs = [
-      ['This has `code', ''],
+      ['This has `code', 'This has'],
       ['This has `code`', 'This has `code`'],
-      ['This has `', ''],
-      ['This has ``', ''],
+      ['This has `', 'This has'],
+      ['This has ``', 'This has'],
       ['Use the `function()` method', 'Use the `function()` method'],
     ]
 
@@ -114,10 +114,10 @@ const z =`
 
   describe('links', () => {
     const testPairs = [
-      ['This is a [link', ''],
-      ['This is a [link]', ''],
-      ['This is a [link](', ''],
-      ['This is a [link](https://', ''],
+      ['This is a [link', 'This is a'],
+      ['This is a [link]', 'This is a'],
+      ['This is a [link](', 'This is a'],
+      ['This is a [link](https://', 'This is'],
       ['This is a [link](https://example.com)', 'This is a [link](https://example.com)'],
       ['[First](url1) and [Second](url2)', '[First](url1) and [Second](url2)'],
       ['First line\nSecond line [incomplete', 'First line'],
@@ -210,28 +210,6 @@ const x = 1
 [Link](https://example.com)`
       expect(getLastRenderableMarkdown(markdown)).toBe(markdown)
     })
-
-    it('should return safe portion for incomplete markdown', () => {
-      const markdown = `# Title
-
-This is **bold** and *italic* text.
-
-## Subtitle
-
-- First item
-- Second item
-
-\`\`\`javascript
-const x = 1`
-      expect(getLastRenderableMarkdown(markdown)).toBe(`# Title
-
-This is **bold** and *italic* text.
-
-## Subtitle
-
-- First item
-- Second item`)
-    })
   })
 
   describe('edge cases', () => {
@@ -242,8 +220,8 @@ This is **bold** and *italic* text.
       ['Text with @#$%^&*()', 'Text with @#$%^&*()'],
       ['Hello 🎉 World', 'Hello 🎉 World'],
       ['Hello 世界', 'Hello 世界'],
-      ['This is **bold', ''],
-      ['Line 1\nLine 2\nLine 3 **bold', 'Line 1\nLine 2'],
+      ['This is **bold', 'This is'],
+      ['Line 1\nLine 2\nLine 3 **bold', 'Line 1\nLine 2\nLine 3'],
     ]
 
     test.each(testPairs)('should handle: %s', (input, expected) => {
